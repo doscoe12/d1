@@ -1,0 +1,36 @@
+name: Build EXE
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install opencv-python
+        pip install pillow
+        pip install pyautogui
+        pip install keyboard
+        pip install numpy
+        pip install pywin32
+        
+    - name: Build EXE
+      run: |
+        python -m PyInstaller --onefile --windowed --collect-all cv2 --hidden-import=PIL._tkinter_finder --hidden-import=pyautogui --hidden-import=keyboard --hidden-import=win32clipboard --name="이미지분할프로그램" image_splitter.py
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ImageSplitter
+        path: dist/
